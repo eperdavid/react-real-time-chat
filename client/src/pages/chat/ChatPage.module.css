@@ -1,0 +1,164 @@
+.wrapper{
+    color: #fff;
+    box-sizing: border-box;
+    height: 100vh;
+    display: flex;
+    padding: 2rem;
+    gap: 2rem;
+    max-width: 2000px;
+    margin: 0 auto;
+}
+
+.chats{
+    box-sizing: border-box;
+    flex: 1;
+    background-color: #161616;
+    height: 100%;
+    border-radius: 25px;
+    padding: 1.5rem;
+    max-width: 34%;
+    min-width: 350px;
+    overflow: hidden;
+}
+
+.chatsHeader{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chatsHeader h1{
+    margin: 0;
+    font-weight: 600;
+}
+
+.chatHeader .flex{
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.chatHeader .backIcon{
+    display: none;
+}
+
+.icon{
+    font-size: 24px;
+}
+
+.chats input{
+    margin: 2rem 0;
+    background-color: #242424;
+    color: white;
+}
+
+.cards{
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    height: 100%;
+    overflow: auto;
+}
+
+.chat{
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.chatHeader{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem;
+    background-color: #161616;
+    border-radius: 25px;
+}
+
+.name{
+    font-size: 22px;
+    color: #7D7D7D;
+}
+
+.chatBody{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.chatFooter{
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 5px;
+}
+
+.chatFooter div{
+    flex: 95%;
+}
+
+.chatFooter input{
+    background-color: #161616;
+    color: white;
+}
+
+.chatFooter button{
+   flex: 5%;
+   min-width: 60px;
+}
+
+@media only screen and (max-width: 1000px) {
+
+    #Chats .chat{
+        display: none;
+    }
+
+    #Chat .chats{
+        display: none;
+    }
+
+    .chatHeader .backIcon{
+        display: block;
+    }
+
+    #Chats{
+        background-color: #161616;
+        
+    }
+
+    .chats{
+        max-width: 100%;
+        border-radius: 0;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .wrapper{
+        padding: 0;
+    }
+
+    .chat{
+        padding: .5rem;
+    }
+
+    .chatHeader{
+        padding: 1.2rem;
+        border-radius: 20px;
+    }
+
+    .chatHeader{
+        font-size: 14px;
+    }
+
+    .chatHeader .name{
+        font-size: 18px;
+    }
+
+    .chatFooter{
+        gap: .7rem;
+    }
+
+    .chatFooter button, .chatFooter input{
+        padding: 1rem;
+    }
+
+}

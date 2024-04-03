@@ -1,0 +1,26 @@
+.card{
+    background-color: #484848;
+    padding: 1.2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border-radius: 25px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.card .name{
+    font-weight: 600;
+}
+
+.card .message{
+    color: #BFBFBF;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.active{
+    background-color: #1760F2;
+}
+
