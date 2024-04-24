@@ -10,7 +10,7 @@ const Card = (props) => {
     }
 
     return(
-        <div className={classes}>
+        <div className={classes} style={{gap: props.children ? "1.5rem" : "0rem"}} onClick={props.clicked}>
             <span className={styles.name}>{props.name}</span>
             <span className={styles.message}>{props.children}</span>
         </div>

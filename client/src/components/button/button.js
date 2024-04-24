@@ -1,7 +1,7 @@
 import styles from './button.module.css';
 
 const Button = (props) => (
-    <button className={styles.button}>{props.children}</button>
+    <button className={styles.button} onClick={props.clicked}>{props.children}</button>
 )
 
 export default Button;

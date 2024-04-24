@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './ChatPage.module.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,24 +11,95 @@ import Card from '../../components/card/card';
 
 const ChatPage = () => {
 
-    const [selectedUser, setSelectedUser] = useState();
+    const [users, setUsers] = useState([
+        {username: "Zoli"},
+        {username: "Pista"},
+        {username: "Jani"}
+    ]);
 
+    const [filteredUsers, setFilteredUsers] = useState(users);
+
+    useEffect(() => {
+        setFilteredUsers(users);
+    }, [users]); 
+
+    const [chats, setChats] = useState([
+        {username: "Adam", messages: [], roomID: 5},
+        {username: "Valami", messages: [{message: "Szia", time: "22:15"}, {message:"valami", time: "11:08"}], roomID: 1}
+    ]);
+
+    const [selectedUser, setSelectedUser] = useState({username: "Adam", messages: [], roomID: 5});
+    const [searchActive, setSearchActive] = useState(false);
+    
+    let cards = "";
+
+    if(searchActive)
+    {
+        cards = filteredUsers.map((user, index) => (
+            <Card key={index} name={user.username} selected={false} clicked={() => selectUser(user.username)}></Card>
+        ))
+    }
+    else{
+        cards = chats.map((chat, index) => {
+
+            let select = false;
+            let text = "";
+            if(chat.messages.length > 0)
+            {
+                text = chat.messages[chat.messages.length-1].message;
+            }
+
+            if(selectedUser && selectedUser.username === chat.username)
+            {
+                select = true;
+            }
+            
+            return <Card key={index} name={chat.username} selected={select} clicked={() => selectUser(chat.username)} >{text}</Card>
+        })
+    }
+
+    const userFilter = (event) => {
+        setFilteredUsers(users.filter(user => user.username.toLowerCase().includes(event.target.value.toLowerCase())));
+    }
+
+    const selectUser = (username) => {
+        const userChk = chats.some(user => user.username === username);
+        
+        if(userChk)
+        {
+            const selectedUser = chats.find((chat) => chat.username === username);
+            setSelectedUser(selectedUser); 
+        }
+        else{
+            const user = { username: username, messages: [], roomID: null };
+            const addToChat = [user, ...chats];
+            setChats(addToChat);
+            setSelectedUser(user);
+        }   
+    }
+
+    useEffect(() => {
+        console.log(selectedUser);
+    }, [selectedUser])
+
+    const sendMessage = () => {
+        console.log(selectedUser);
+    }
 
     return (
         <div className={styles.wrapper} id={selectedUser ? styles.Chat : styles.Chats}>
-            <div className={styles.chats}>
+            <div className={styles.chats} style={{backgroundColor: searchActive ? '#2A2A2A' : '#161616'}}>
                 <div className={styles.chatsHeader}>
                     <h1>Chats</h1>
                     <FontAwesomeIcon className={styles.icon} icon={faGear}/>
                 </div>
                 
                 <div>
-                    <Input placeholder="Search"/>
+                    <Input placeholder="Search" onFocus={() => {setSearchActive(true)}} onBlur={() => {setTimeout(() => {setSearchActive(false)},100)}} changed={userFilter} />
                 </div>
 
                 <div className={styles.cards}>
-                    <Card name="John" selected={true} >asdiasjdija sidjasasd asdasdasd jdoa</Card>
-                    <Card name="Test" selected={false} >asd iasjdija sidjasjdoa</Card>
+                    {cards}
                 </div>
             </div>
 
@@ -52,7 +123,7 @@ const ChatPage = () => {
 
                 <div className={styles.chatFooter}>
                     <Input placeholder="Message"/>
-                    <Button><FontAwesomeIcon icon={faArrowUp}/></Button>
+                    <Button clicked={sendMessage}><FontAwesomeIcon icon={faArrowUp}/></Button>
                 </div>
             </div>
         </div>
