@@ -9,13 +9,23 @@ import Input from '../../components/input/input';
 import Button from '../../components/button/button';
 import Card from '../../components/card/card';
 
-const ChatPage = () => {
 
-    const [users, setUsers] = useState([
-        {username: "Zoli"},
-        {username: "Pista"},
-        {username: "Jani"}
-    ]);
+const ChatPage = (props) => {
+
+    const socket = props.socket;
+
+    useEffect(() => {
+        socket.on("updateUsers", (data) => {
+            setUsers(data);
+        })
+    }, [socket]);
+    
+    const username = props.username;
+    //console.log(username);
+
+    const [users, setUsers] = useState();
+
+    
 
     const [filteredUsers, setFilteredUsers] = useState(users);
 
@@ -24,20 +34,37 @@ const ChatPage = () => {
     }, [users]); 
 
     const [chats, setChats] = useState([
-        {username: "Adam", messages: [], roomID: 5},
-        {username: "Valami", messages: [{message: "Szia", time: "22:15"}, {message:"valami", time: "11:08"}], roomID: 1}
+        /* {username: "Adam", messages: [], roomID: 5},
+        {username: "Valami", messages: [{time: "22:15", message: "Szia", author: "Jani" }, {time: "11:08", message: "valami", author: "Zoli"}], roomID: 1} */
     ]);
 
     const [selectedUser, setSelectedUser] = useState({username: "Adam", messages: [], roomID: 5});
+
+    const [chat, setChat] = useState([{time: "22:15", message: "Szia", author: "Jani" }, {time: "11:08", message: "valami", author: "Zoli"}, {time: "11:18", message: "valam2i", author: "Zoli"}]);
+
     const [searchActive, setSearchActive] = useState(false);
     
     let cards = "";
+    let messages = chat.map((message,index) => {
+        let type = "sent";
+        if(message.author !== username)
+        {
+            type = "received";
+        }
+        return <Message key={index} time={message.time} type={type}>{message.message}</Message>
+    });
 
     if(searchActive)
     {
-        cards = filteredUsers.map((user, index) => (
-            <Card key={index} name={user.username} selected={false} clicked={() => selectUser(user.username)}></Card>
-        ))
+        cards = filteredUsers.map((user, index) => {
+            if(filteredUsers !== null && user.username !== username)
+            {
+                return <Card key={index} socketID={user.socketID} name={user.username} selected={false} clicked={() => selectUser(user.socketID, user.username)}></Card>
+            } 
+            else{
+                return null;
+            }
+        })
     }
     else{
         cards = chats.map((chat, index) => {
@@ -54,7 +81,7 @@ const ChatPage = () => {
                 select = true;
             }
             
-            return <Card key={index} name={chat.username} selected={select} clicked={() => selectUser(chat.username)} >{text}</Card>
+            return <Card key={index} name={chat.username} selected={select} clicked={() => selectUser(chat.socketID, chat.username)} >{text}</Card>
         })
     }
 
@@ -62,8 +89,8 @@ const ChatPage = () => {
         setFilteredUsers(users.filter(user => user.username.toLowerCase().includes(event.target.value.toLowerCase())));
     }
 
-    const selectUser = (username) => {
-        const userChk = chats.some(user => user.username === username);
+    const selectUser = (socketID, username) => {
+        const userChk = chats.some(user => user.username === username);     
         
         if(userChk)
         {
@@ -71,16 +98,22 @@ const ChatPage = () => {
             setSelectedUser(selectedUser); 
         }
         else{
-            const user = { username: username, messages: [], roomID: null };
+            const user = { username: username, messages: [], socketID: socketID };
             const addToChat = [user, ...chats];
             setChats(addToChat);
-            setSelectedUser(user);
-        }   
+            setSelectedUser(user)
+        }
     }
 
     useEffect(() => {
-        console.log(selectedUser);
+        //console.log(selectedUser);
     }, [selectedUser])
+
+    useEffect((a) => {
+        console.log(a);
+    }, [chats])
+
+
 
     const sendMessage = () => {
         console.log(selectedUser);
@@ -114,10 +147,11 @@ const ChatPage = () => {
                 </div>
 
                 <div className={styles.chatBody}>
-                    <Message time="12:45" type="sent">1asdrf asd</Message>
+                    {messages}
+                    {/* <Message time="12:45" type="sent">1asdrf asd</Message>
                     <Message time="12:45" type="received">2asdwq üasdipasdouiahsid aisjdiasas asdasd asd asdasdasdasdasd asdasdzenet asdasd asddasdasdasdasdas sad</Message>
                     <Message time="12:45" type="received">3dsad üzenet</Message>
-                    <Message time="12:45" type="sent">4asdd üzeneasdojaopsjdpoiajsdioj asiasdkjaiosddjat</Message>
+                    <Message time="12:45" type="sent">4asdd üzeneasdojaopsjdpoiajsdioj asiasdkjaiosddjat</Message> */}
                 </div>
 
 
