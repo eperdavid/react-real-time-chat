@@ -20,26 +20,24 @@ const ChatPage = (props) => {
         })
     }, [socket]);
     
-    const username = props.username;
-    //console.log(username);
+    const myData = {socketId: props.socketId, username: props.username};
 
     const [users, setUsers] = useState();
-
     
 
     const [filteredUsers, setFilteredUsers] = useState(users);
 
     useEffect(() => {
         setFilteredUsers(users);
-    }, [users]); 
+    }, [users]);
 
     const [chats, setChats] = useState([
         /* {username: "Adam", messages: [], roomID: 5},
         {username: "Valami", messages: [{time: "22:15", message: "Szia", author: "Jani" }, {time: "11:08", message: "valami", author: "Zoli"}], roomID: 1} */
     ]);
 
-    const [selectedUser, setSelectedUser] = useState({username: "Adam", messages: [], roomID: 5});
-
+    const [selectedUser, setSelectedUser] = useState();
+    console.log("rendered");
     const [chat, setChat] = useState([{time: "22:15", message: "Szia", author: "Jani" }, {time: "11:08", message: "valami", author: "Zoli"}, {time: "11:18", message: "valam2i", author: "Zoli"}]);
 
     const [searchActive, setSearchActive] = useState(false);
@@ -47,7 +45,7 @@ const ChatPage = (props) => {
     let cards = "";
     let messages = chat.map((message,index) => {
         let type = "sent";
-        if(message.author !== username)
+        if(message.author !== myData.username)
         {
             type = "received";
         }
@@ -57,7 +55,7 @@ const ChatPage = (props) => {
     if(searchActive)
     {
         cards = filteredUsers.map((user, index) => {
-            if(filteredUsers !== null && user.username !== username)
+            if(filteredUsers !== null && user.username !== myData.username)
             {
                 return <Card key={index} socketID={user.socketID} name={user.username} selected={false} clicked={() => selectUser(user.socketID, user.username)}></Card>
             } 
@@ -76,7 +74,7 @@ const ChatPage = (props) => {
                 text = chat.messages[chat.messages.length-1].message;
             }
 
-            if(selectedUser && selectedUser.username === chat.username)
+            if(selectedUser && selectedUser.socketID === chat.socketID)
             {
                 select = true;
             }
@@ -90,27 +88,40 @@ const ChatPage = (props) => {
     }
 
     const selectUser = (socketID, username) => {
-        const userChk = chats.some(user => user.username === username);     
-        
+        const userChk = chats.some(user => user.username === username);   
+
         if(userChk)
         {
-            const selectedUser = chats.find((chat) => chat.username === username);
-            setSelectedUser(selectedUser); 
+            const index = chats.findIndex(chat => chat.socketID === socketID);
+            if(index !== -1)
+            {
+                setSelectedUser({
+                    socketID: socketID,
+                    index: index
+                });
+            }
         }
         else{
+            setSelectedUser({socketID: socketID, index: 0});
             const user = { username: username, messages: [], socketID: socketID };
             const addToChat = [user, ...chats];
             setChats(addToChat);
-            setSelectedUser(user)
         }
     }
 
     useEffect(() => {
-        //console.log(selectedUser);
-    }, [selectedUser])
-
-    useEffect((a) => {
-        console.log(a);
+        if(selectedUser)
+        {
+            const index = chats.findIndex(chat => chat.socketID === selectedUser.socketID);
+            if(index !== -1 && selectedUser.index !== index)
+            {
+                setSelectedUser(prevSelectedUser => ({
+                    ...prevSelectedUser,
+                    index: index
+                }));
+            }
+            
+        }
     }, [chats])
 
 
@@ -119,6 +130,7 @@ const ChatPage = (props) => {
         console.log(selectedUser);
     }
 
+    
     return (
         <div className={styles.wrapper} id={selectedUser ? styles.Chat : styles.Chats}>
             <div className={styles.chats} style={{backgroundColor: searchActive ? '#2A2A2A' : '#161616'}}>

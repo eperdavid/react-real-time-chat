@@ -21,17 +21,23 @@ io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
 
     socket.on("login", (data) => {
-        if(users.some((user) => user.username.toLowerCase() === data.username.toLowerCase()))
+        if(data.username.trim() !== '')
         {
-            console.log("loginError");  
+            if(users.some((user) => user.username.toLowerCase() === data.username.toLowerCase()))
+            {
+                socket.emit("loginError", "Username is already exist");
+            }
+            else{
+                socket.emit("loginSuccess", data.username, data.socketId);
+                users.push({socketID: data.socketId, username: data.username});
+                setTimeout(() => {
+                    io.emit("updateUsers", users);
+                }, 100);
+                console.log(users);
+            }
         }
         else{
-            socket.emit("loginSuccess", data.username);
-            users.push({socketID: data.socketId, username: data.username});
-            setTimeout(() => {
-                io.emit("updateUsers", users);
-            }, 100);
-            console.log(users);
+            socket.emit("loginError", "Empty field");
         }
     });
 

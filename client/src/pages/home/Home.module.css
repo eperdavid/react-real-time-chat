@@ -34,7 +34,7 @@
 .gap{
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: .5rem;
 }
 
 .gap input{
@@ -44,6 +44,19 @@
 .gap input::placeholder{
     font-weight: 600;
 }
+
+.error{
+    transition: .1s;
+    font-size: small;
+    color: rgb(255, 84, 84);
+    opacity: 0;
+}
+
+.visible{
+    opacity: 1;
+}
+
+
 
 @media only screen and (max-width: 1800px) {
     .home{

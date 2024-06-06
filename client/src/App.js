@@ -10,8 +10,8 @@ const socket = io('http://localhost:3001');
 function App() {
   console.log("App");
 
-  const login = (username) => {
-    setPage(<ChatPage socket={socket} username={username} />)
+  const login = (username, socketId) => {
+    setPage(<ChatPage socket={socket} username={username} socketId={socketId} />)
   }
 
   const [page, setPage] = useState(<HomePage socket={socket} login={login} />);

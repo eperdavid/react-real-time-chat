@@ -13,25 +13,33 @@ const HomePage = (props) => {
 
     const [socketId, setSocketId] = useState('');
 
-    console.log(socketId);
-
     const [username, setUsername] = useState('');
+
+    const [error, setError] = useState({visible: false, message: ''});
 
     useEffect(() => {
         socket.on("connect", () => {
             setSocketId(socket.id);
         });
 
-        socket.on("loginSuccess", (username) => {
-            props.login(username);
+        socket.on("loginSuccess", (username, socketId) => {
+            props.login(username, socketId);
+        })
+
+        socket.on("loginError", (message) => {
+            setError({visible: true, message: message});
         })
     }, [socket]);
 
     const login = (socketId, username) => {
         socket.emit("login", {socketId, username});
     }
-
     
+    const handleInputChange = (event) => {
+        setUsername(event.target.value);
+        setError(prev => ({...prev, visible: false}));
+        console.log(error);
+    }
 
     return(
         <div className={styles.home}>
@@ -42,8 +50,11 @@ const HomePage = (props) => {
             </div>
             <div className={styles.right}>
                 <div className={styles.gap}>
-                    <Input placeholder="Username" changed={(event) => {setUsername(event.target.value)}} />
-                    <Button clicked={() => login(socketId,username)}>Join chat</Button>
+                    <div>
+                    <Input placeholder="Username" changed={(event) => {handleInputChange(event)}} />
+                    <span className={`${styles.error} ${error.visible ? styles.visible : ''}`}>{error.message || "\u00A0"}</span>
+                    </div>
+                    <Button clicked={() => login(socketId,username)} disabled={error.visible}>Join chat</Button>
                 </div>
             </div>
         </div>
