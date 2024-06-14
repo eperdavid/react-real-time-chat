@@ -19,6 +19,22 @@
     text-overflow: ellipsis;
 }
 
+.flex{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.new .message{
+    font-weight: bolder;
+}
+
+.new .dot{
+    padding: .5rem;
+    background-color: #1760F2;
+    border-radius: 50%;
+}
+
 .active{
     background-color: #1760F2;
 }

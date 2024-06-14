@@ -38,7 +38,6 @@ const HomePage = (props) => {
     const handleInputChange = (event) => {
         setUsername(event.target.value);
         setError(prev => ({...prev, visible: false}));
-        console.log(error);
     }
 
     return(

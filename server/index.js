@@ -46,6 +46,13 @@ io.on('connection', (socket) => {
         users = users.filter(user => user.socketID !== socket.id);
         io.emit("updateUsers", users);
     });
+
+
+    socket.on("sendMessage", (data) => {
+        io.to(data.to).emit('privateMessage', {from: socket.id, message: data.message, username: data.username})
+    });
+
+
 })
 
 
