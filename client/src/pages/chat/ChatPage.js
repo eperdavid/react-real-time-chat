@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styles from './ChatPage.module.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGear, faEllipsisVertical, faArrowUp, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faCircleInfo, faArrowUp, faChevronLeft, faUserLargeSlash } from '@fortawesome/free-solid-svg-icons';
 
 import Message from '../../components/message/message';
 import Input from '../../components/input/input';
@@ -12,6 +12,23 @@ import Card from '../../components/card/card';
 
 const ChatPage = (props) => {
 
+    const myData = {socketId: props.socketId, username: props.username};
+
+    const [users, setUsers] = useState([]);
+
+    const [filteredUsers, setFilteredUsers] = useState(users);
+
+    const [chats, setChats] = useState([]);
+
+    const [selectedUser, setSelectedUser] = useState();
+
+    const [searchActive, setSearchActive] = useState(false);
+
+    const [currentMessage, setCurrentMessage] = useState('');
+
+    const chatsRef = useRef(chats);
+    const selectedUserRef = useRef(selectedUser);
+
     const socket = props.socket;
 
     useEffect(() => {
@@ -20,28 +37,25 @@ const ChatPage = (props) => {
         });
 
         socket.on("privateMessage", (data) => {
-            // console.log(data); {from: 'qZ5iCPJ9szowstEAAAAF', message: 'Hello'}
             let newChats = [...chatsRef.current];
             const now = new Date();
             const msg = {time: now.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' }), message: data.message, author: data.username}
             const chatIndex = chatsRef.current.findIndex(chat => chat.socketID === data.from);
             if(chatIndex !== -1)
             {
-                /* newChats[chatIndex] = {
+                newChats[chatIndex] = {
                     ...newChats[chatIndex],
                     messages: [msg, ...newChats[chatIndex].messages]
-                }*/
-                newChats[chatIndex].messages.push(msg);
+                }
+                //newChats[chatIndex].messages.push(msg);
 
-                if(chatIndex !== selectedUserRef.current.index)
+                if(selectedUserRef.current && chatIndex !== selectedUserRef.current.index)
                 {
                     newChats[chatIndex] = {
                         ...newChats[chatIndex],
                         newMsg: true
                     }
                 }
-
-                console.log("UJ log: "+selectedUserRef.current.index);
 
                 if(chatIndex !== 0)
                 {
@@ -57,32 +71,34 @@ const ChatPage = (props) => {
             
             setChats(newChats);
         })
+
+        socket.on('userDisconnect', (data) => {
+            let Chats = [...chatsRef.current];
+            const chatIndex = Chats.findIndex(chat => chat.socketID === data.socketID);
+            if(chatIndex !== -1)
+            {
+                Chats[chatIndex] = {
+                    ...Chats[chatIndex],
+                    offline: true
+                }
+            }
+            console.log(chatIndex);
+            setChats(Chats);
+        })
     }, [socket]);
     
-    const myData = {socketId: props.socketId, username: props.username};
-
-    const [users, setUsers] = useState();
-    
-
-    const [filteredUsers, setFilteredUsers] = useState(users);
 
     useEffect(() => {
         setFilteredUsers(users);
     }, [users]);
 
-    const [chats, setChats] = useState([]);
-
-    const [selectedUser, setSelectedUser] = useState();
-
-    const [searchActive, setSearchActive] = useState(false);
-
-    const [currentMessage, setCurrentMessage] = useState('');
-
-    const chatsRef = useRef(chats);
-    const selectedUserRef = useRef(selectedUser);
+    
     
     let cards = "";
-    let messages = "No messages";
+    let messages = <div className={styles.info}>
+                    <FontAwesomeIcon className={styles.icon} icon={faCircleInfo} />
+                    <p>If you want to try out the application but there are no users online, you can do so by opening a <a href='http://localhost:3000/' target='_blank'>new tab</a> in your browser.</p>
+                </div>;
     if(selectedUser)
     {
         messages = chats[selectedUser.index].messages.map((message,index) => {
@@ -95,35 +111,50 @@ const ChatPage = (props) => {
         });
     }
 
-    if(searchActive)
+    if(users.length > 1 || chats.length > 0)
     {
-        cards = filteredUsers.map((user, index) => {
-            if(filteredUsers !== null && user.username !== myData.username)
+        if(searchActive)
+        {
+            cards = filteredUsers.map((user, index) => {
+                if(filteredUsers !== null && user.username !== myData.username)
+                {
+                    return <Card key={index} socketID={user.socketID} name={user.username} selected={false} clicked={() => selectUser(user.socketID, user.username)} new={false} ></Card>
+                }
+            })
+        }
+        else{
+            if(chats.length > 0)
             {
-                return <Card key={index} socketID={user.socketID} name={user.username} selected={false} clicked={() => selectUser(user.socketID, user.username)} new={false} ></Card>
-            } 
-            else{
-                return null;
+                
+                cards = chats.map((chat, index) => {
+                    
+                    let select = false;
+                    let text = "";
+                    if(chat.messages.length > 0)
+                    {
+                        text = chat.messages[0].message;
+                    }
+
+                    if(selectedUser && selectedUser.socketID === chat.socketID)
+                    {
+                        select = true;
+                    }
+                        
+                    return <Card key={index} name={chat.username} selected={select} clicked={() => selectUser(chat.socketID, chat.username)} new={chat.newMsg} offline={chat.offline}>{text}</Card>
+                })
             }
-        })
+            else{
+                cards = <div className={styles.noChats}>
+                    <p>You don't have any chats yet. Click the search bar to find a chat partner!</p>
+                </div>;
+            }
+        }
     }
     else{
-        cards = chats.map((chat, index) => {
-
-            let select = false;
-            let text = "";
-            if(chat.messages.length > 0)
-            {
-                text = chat.messages[chat.messages.length-1].message;
-            }
-
-            if(selectedUser && selectedUser.socketID === chat.socketID)
-            {
-                select = true;
-            }
-            
-            return <Card key={index} name={chat.username} selected={select} clicked={() => selectUser(chat.socketID, chat.username)} new={chat.newMsg}>{text}</Card>
-        })
+        cards = <div className={styles.usersOffline}>
+            <FontAwesomeIcon className={styles.icon} icon={faUserLargeSlash} />
+            <p>Currently, no users are online</p>
+        </div>;
     }
 
 
@@ -135,7 +166,7 @@ const ChatPage = (props) => {
 
 
     const selectUser = (socketID, username) => {
-        const userChk = chats.some(user => user.username === username);   
+        const userChk = chats.some(user => user.socketID === socketID);   
 
         if(userChk)
         {
@@ -154,7 +185,7 @@ const ChatPage = (props) => {
         }
         else{
             setSelectedUser({socketID: socketID, index: 0});
-            const user = { username: username, messages: [], socketID: socketID, newMsg: false };
+            const user = { username: username, messages: [], socketID: socketID, newMsg: false, offline: false };
             const addToChat = [user, ...chats];
             setChats(addToChat);
         }
@@ -180,6 +211,8 @@ const ChatPage = (props) => {
        selectedUserRef.current = selectedUser;
     }, [selectedUser])
 
+    
+
 
 
     const handleInputChange = (event) => {
@@ -191,11 +224,11 @@ const ChatPage = (props) => {
         const now = new Date();
         const msg = {time: now.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' }), message: message, author: username}
         let updatedChats = [...chats];
-        /* updatedChats[selectedUser.index] = {
+        updatedChats[selectedUser.index] = {
             ...updatedChats[selectedUser.index],
             messages: [msg, ...updatedChats[selectedUser.index].messages]
-        } */
-        updatedChats[selectedUser.index].messages.push(msg);
+        }
+        //updatedChats[selectedUser.index].messages.push(msg);
         if(selectedUser.index !== 0)
         {
             const [moved] = updatedChats.splice(selectedUser.index, 1);
@@ -213,10 +246,10 @@ const ChatPage = (props) => {
     {
         header = <div className={styles.chatHeader}>
                     <div className={styles.flex}>
-                    <FontAwesomeIcon className={styles.backIcon} icon={faChevronLeft} size='xl'/>
+                    <FontAwesomeIcon className={styles.backIcon} icon={faChevronLeft} size='xl' onClick={() => setSelectedUser(null)}/>
                     <div className={styles.name}>{chats[selectedUser.index].username}</div>
                     </div>
-                    <FontAwesomeIcon className={styles.icon} icon={faEllipsisVertical}/>
+                    {chats[selectedUser.index].offline ? <div style={{fontSize: 'Larger'}}>Offline</div> : ''}
                 </div>;
     }
 
@@ -226,7 +259,7 @@ const ChatPage = (props) => {
             <div className={styles.chats} style={{backgroundColor: searchActive ? '#2A2A2A' : '#161616'}}>
                 <div className={styles.chatsHeader}>
                     <h1>Chats</h1>
-                    <FontAwesomeIcon className={styles.icon} icon={faGear}/>
+                    <FontAwesomeIcon style={{display: 'none'}} className={styles.icon} icon={faGear}/>
                 </div>
                 
                 <div>

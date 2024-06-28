@@ -29,13 +29,29 @@
     font-weight: bolder;
 }
 
-.new .dot{
+.dot{
     padding: .5rem;
-    background-color: #1760F2;
     border-radius: 50%;
+}
+
+.new .dot{ 
+    background-color: #1760F2;  
+}
+
+.offline{
+    background-color: #848484;
+}
+
+.offline .dot{
+    background-color: #D9D9D9 !important;
 }
 
 .active{
     background-color: #1760F2;
 }
 
+@media only screen and (max-width: 500px) {
+    .card{
+        padding: 1.2rem 1rem;
+    }
+}

@@ -21,6 +21,39 @@
     overflow: hidden;
 }
 
+.info{
+    display: flex;
+    align-items: center;
+    padding: 0 5rem;
+    gap: 1rem;
+    color: #848484;
+    margin: auto;
+}
+
+.info .icon{
+    height: 2.2rem;
+    width: auto;
+}
+
+.info a, .noChats span{
+    color: #256eff;
+    text-decoration: underline;
+}
+
+.usersOffline{
+    color: #848484;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.usersOffline .icon{
+    height: 5rem;
+}
+
+.noChats{
+    color: #848484;
+}
+
 .chatsHeader{
     display: flex;
     align-items: center;
@@ -42,7 +75,7 @@
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
-    height: 100%;
+    height: calc(100% - 170px);
     overflow: auto;
 }
 
@@ -73,20 +106,23 @@
     padding: 2rem;
     background-color: #161616;
     border-radius: 25px;
+    color: #7D7D7D;
 }
 
 .name{
-    font-size: 22px;
-    color: #7D7D7D;
+    font-size: 22px; 
 }
 
 .chatBody{
     flex-grow: 1;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    flex-direction: column-reverse;
     overflow: auto;
 }
+
+/* .chatBody > :first-child {
+    margin-top: auto !important;
+} */
 
 .chatFooter{
     display: flex;
@@ -110,6 +146,10 @@
 
 @media only screen and (max-width: 1000px) {
 
+    .wrapper{
+        padding: 0;
+    }
+
     #Chats .chat{
         display: none;
     }
@@ -130,6 +170,7 @@
     .chats{
         max-width: 100%;
         border-radius: 0;
+        padding: 3rem;
     }
 }
 
@@ -140,6 +181,10 @@
 
     .chat{
         padding: .5rem;
+    }
+    
+    .chats{
+        padding: 2rem;
     }
 
     .chatHeader{
@@ -162,5 +207,28 @@
     .chatFooter button, .chatFooter input{
         padding: 1rem;
     }
-
 }
+
+
+
+/* A teljes scrollbar konténer */
+::-webkit-scrollbar {
+    width: 5px; /* A scrollbar szélessége */
+    height: 5px; /* A scrollbar magassága vízszintes scrollbar esetén */
+  }
+  
+  /* A scrollbar sín (háttér) */
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  
+  /* A scrollbar fogantyúja (ami mozog) */
+  ::-webkit-scrollbar-thumb {
+    background: #666666; 
+    border-radius: 10px; 
+  }
+  
+  /* A scrollbar fogantyúja hover állapotban */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }

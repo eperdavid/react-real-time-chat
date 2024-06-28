@@ -21,9 +21,11 @@ io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
 
     socket.on("login", (data) => {
+    if(data.username.length <= 15)
+    {
         if(data.username.trim() !== '')
         {
-            if(users.some((user) => user.username.toLowerCase() === data.username.toLowerCase()))
+            if(users.some((user) => user.username.toLowerCase().trim() === data.username.toLowerCase().trim()))
             {
                 socket.emit("loginError", "Username is already exist");
             }
@@ -39,12 +41,17 @@ io.on('connection', (socket) => {
         else{
             socket.emit("loginError", "Empty field");
         }
+    }
+    else{
+        socket.emit("loginError", "Maximum 15 character");
+    }
     });
 
     socket.on("disconnect", () => {
         console.log(`User disconnected: ${socket.id}`);
         users = users.filter(user => user.socketID !== socket.id);
         io.emit("updateUsers", users);
+        io.emit("userDisconnect", {socketID: socket.id});
     });
 
 

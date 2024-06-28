@@ -49,9 +49,10 @@ const HomePage = (props) => {
             </div>
             <div className={styles.right}>
                 <div className={styles.gap}>
-                    <div>
-                    <Input placeholder="Username" changed={(event) => {handleInputChange(event)}} />
+                    <div style={{position: 'relative'}}>
+                    <Input placeholder="Username" changed={(event) => {handleInputChange(event)}} max={15} />
                     <span className={`${styles.error} ${error.visible ? styles.visible : ''}`}>{error.message || "\u00A0"}</span>
+                    <span className={styles.counter}>{username.length}/15</span>
                     </div>
                     <Button clicked={() => login(socketId,username)} disabled={error.visible}>Join chat</Button>
                 </div>
