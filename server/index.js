@@ -12,7 +12,7 @@ let users = [];
 
 const io = new Server(server, {
     cors: {
-        origin: "https://reactchatdemo.vercel.app",
+        origin: "https://reactchatdemo.vercel.app:3000",
         methods: ["GET", "POST"]
     }
 });
