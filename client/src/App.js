@@ -8,7 +8,6 @@ import io from 'socket.io-client';
 const socket = io('http://localhost:3001');
 
 function App() {
-  console.log("App");
 
   const login = (username, socketId) => {
     setPage(<ChatPage socket={socket} username={username} socketId={socketId} />)

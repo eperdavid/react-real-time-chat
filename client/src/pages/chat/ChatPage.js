@@ -82,7 +82,6 @@ const ChatPage = (props) => {
                     offline: true
                 }
             }
-            console.log(chatIndex);
             setChats(Chats);
         })
     }, [socket]);
@@ -97,7 +96,7 @@ const ChatPage = (props) => {
     let cards = "";
     let messages = <div className={styles.info}>
                     <FontAwesomeIcon className={styles.icon} icon={faCircleInfo} />
-                    <p>If you want to try out the application but there are no users online, you can do so by opening a <a href='http://localhost:3000/' target='_blank'>new tab</a> in your browser.</p>
+                    <p>If you want to try out the application but there are no users online, you can do so by opening a <a href='http://localhost:3000/' target='_blank' rel="noopener noreferrer">new tab</a> in your browser.</p>
                 </div>;
     if(selectedUser)
     {
@@ -119,6 +118,9 @@ const ChatPage = (props) => {
                 if(filteredUsers !== null && user.username !== myData.username)
                 {
                     return <Card key={index} socketID={user.socketID} name={user.username} selected={false} clicked={() => selectUser(user.socketID, user.username)} new={false} ></Card>
+                }
+                else{
+                    return null;
                 }
             })
         }
@@ -241,6 +243,16 @@ const ChatPage = (props) => {
         socket.emit('sendMessage', {to, message, username});
     }
 
+    const handlePressKey = (event) => {
+        if(event.key === 'Enter')
+        {
+            if(selectedUser && currentMessage.trim() !== '')
+            {
+                sendMessage(selectedUser.socketID, currentMessage, myData.username);
+            }
+        }
+    }
+
     let header = '';
     if(selectedUser)
     {
@@ -276,16 +288,12 @@ const ChatPage = (props) => {
                 {header}
                 <div className={styles.chatBody}>
                     {messages}
-                    {/* <Message time="12:45" type="sent">1asdrf asd</Message>
-                    <Message time="12:45" type="received">2asdwq üasdipasdouiahsid aisjdiasas asdasd asd asdasdasdasdasd asdasdzenet asdasd asddasdasdasdasdas sad</Message>
-                    <Message time="12:45" type="received">3dsad üzenet</Message>
-                    <Message time="12:45" type="sent">4asdd üzeneasdojaopsjdpoiajsdioj asiasdkjaiosddjat</Message> */}
                 </div>
 
 
                 <div className={styles.chatFooter}>
-                    <Input placeholder="Message" value={currentMessage} changed={(event) => {handleInputChange(event)}} />
-                    <Button clicked={() => sendMessage(selectedUser.socketID, currentMessage, myData.username)} disabled={currentMessage.trim() === ''}><FontAwesomeIcon icon={faArrowUp}/></Button>
+                    <Input placeholder="Message" value={currentMessage} changed={(event) => {handleInputChange(event)}} keyDown={(event) => handlePressKey(event)} />
+                    <Button clicked={() => sendMessage(selectedUser.socketID, currentMessage, myData.username)}  disabled={!selectedUser || currentMessage.trim() === ''}><FontAwesomeIcon icon={faArrowUp}/></Button>
                 </div>
             </div>
         </div>

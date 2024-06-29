@@ -2,10 +2,6 @@ import styles from './card.module.css';
 
 const Card = (props) => {
 
-    console.log('props.new:', props.new);
-  console.log('props.offline:', props.offline);
-
-
     let classes = [styles.card];
 
     if(props.selected)
