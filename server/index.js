@@ -12,7 +12,7 @@ let users = [];
 
 const io = new Server(server, {
     cors: {
-        origin: "localhost:3000",
+        origin: "letschatnow.vercel.app/",
         methods: ["GET", "POST"]
     }
 });
