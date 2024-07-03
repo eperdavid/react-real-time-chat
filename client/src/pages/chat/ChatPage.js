@@ -96,7 +96,7 @@ const ChatPage = (props) => {
     let cards = "";
     let messages = <div className={styles.info}>
                     <FontAwesomeIcon className={styles.icon} icon={faCircleInfo} />
-                    <p>If you want to try out the application but there are no users online, you can do so by opening a <a href='http://localhost:3000/' target='_blank' rel="noopener noreferrer">new tab</a> in your browser.</p>
+                    <p>If you want to try out the application but there are no users online, you can do so by opening a <a href='https://letschatnow.vercel.app' target='_blank' rel="noopener noreferrer">new tab</a> in your browser.</p>
                 </div>;
     if(selectedUser)
     {

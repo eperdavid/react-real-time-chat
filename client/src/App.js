@@ -19,7 +19,7 @@ function App() {
 
   return (
     <div className="App">
-      {page}
+      {<ChatPage socket={socket} username={"User"} socketId={"askdk123lsmbBSd2"} />}
     </div>
   );
 }
