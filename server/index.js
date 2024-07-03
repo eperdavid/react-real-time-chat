@@ -12,7 +12,7 @@ let users = [];
 
 const io = new Server(server, {
     cors: {
-        origin: "letschatnow.vercel.app/",
+        origin: ["https://letschatnow.vercel.app", "http://letschatnow.vercel.app"],
         methods: ["GET", "POST"]
     }
 });
@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
 })
 
 
-
-server.listen(3001, () => {
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => {
     console.log("Server is running");
 })
