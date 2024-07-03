@@ -144,6 +144,27 @@
    min-width: 60px;
 }
 
+
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+  
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+  
+::-webkit-scrollbar-thumb {
+    background: #666666; 
+    border-radius: 10px; 
+}
+  
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+
 @media only screen and (max-width: 1000px) {
 
     .wrapper{
@@ -213,25 +234,3 @@
 }
 
 
-
-/* A teljes scrollbar konténer */
-::-webkit-scrollbar {
-    width: 5px; /* A scrollbar szélessége */
-    height: 5px; /* A scrollbar magassága vízszintes scrollbar esetén */
-  }
-  
-  /* A scrollbar sín (háttér) */
-  ::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-  
-  /* A scrollbar fogantyúja (ami mozog) */
-  ::-webkit-scrollbar-thumb {
-    background: #666666; 
-    border-radius: 10px; 
-  }
-  
-  /* A scrollbar fogantyúja hover állapotban */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #555; 
-  }
