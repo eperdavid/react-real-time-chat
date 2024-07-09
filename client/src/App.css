@@ -1,14 +1,10 @@
-html{
-    height: -webkit-fill-available;
-}
-
-body{
+ body{
     margin: 0;
 }
 
 .App{
     height: 100vh;
-    height: -webkit-fill-available;
+    overflow: hidden;
     background-color: #222222;
     font-family: "Inter", sans-serif;
 }
