@@ -1,9 +1,14 @@
+html{
+    height: -webkit-fill-available;
+}
+
 body{
     margin: 0;
 }
 
 .App{
-    min-height: 100dvh;
+    height: 100vh;
+    height: -webkit-fill-available;
     background-color: #222222;
     font-family: "Inter", sans-serif;
 }
