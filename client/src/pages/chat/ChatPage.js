@@ -20,11 +20,14 @@ const ChatPage = (props) => {
 
     const [chats, setChats] = useState([]);
 
-    const [selectedUser, setSelectedUser] = useState();
+    const [selectedUser, setSelectedUser] = useState(null);
 
     const [searchActive, setSearchActive] = useState(false);
 
     const [currentMessage, setCurrentMessage] = useState('');
+
+    const [isSent, setIsSent] = useState(false);
+    const [isTypeing, setIsTypeing] = useState(false);
 
     const chatsRef = useRef(chats);
     const selectedUserRef = useRef(selectedUser);
@@ -70,6 +73,7 @@ const ChatPage = (props) => {
             }
             
             setChats(newChats);
+            setIsTypeing(false);
         })
 
         socket.on('userDisconnect', (data) => {
@@ -84,7 +88,34 @@ const ChatPage = (props) => {
             }
             setChats(Chats);
         })
+
+        socket.on("typeing", (data) => {
+            if(selectedUserRef.current)
+            {
+                if(selectedUserRef.current.socketID === data.from)
+                { 
+                    setIsTypeing(true);
+                }
+            }     
+        })
+
+        socket.on("stopTypeing", (data) => {
+            if(selectedUserRef.current)
+            {
+                if(selectedUserRef.current.socketID === data.from)
+                { 
+                    setIsTypeing(false);   
+                }
+            }     
+            
+        })
+
+
     }, [socket]);
+
+    useEffect(() => {
+        console.log('isSent state changed:', isSent);
+    }, [isSent]);
     
 
     useEffect(() => {
@@ -168,7 +199,12 @@ const ChatPage = (props) => {
 
 
     const selectUser = (socketID, username) => {
-        const userChk = chats.some(user => user.socketID === socketID);   
+        const userChk = chats.some(user => user.socketID === socketID);  
+        if(selectedUser)
+        {
+            socket.emit("stopTypeing", {to: selectedUser.socketID});
+        }
+        setCurrentMessage('');
 
         if(userChk)
         {
@@ -213,13 +249,29 @@ const ChatPage = (props) => {
        selectedUserRef.current = selectedUser;
     }, [selectedUser])
 
+    useEffect(() => {
+        if(selectedUser)
+        {
+            if(!isSent)
+            {
+                setIsSent(true);
+                socket.emit("typeing", {to: selectedUser.socketID});
+            } 
+
+            if(currentMessage === '')
+            {
+                socket.emit("stopTypeing", {to: selectedUser.socketID});
+                setIsSent(false);
+            }  
+        }       
+    }, [currentMessage])
+
     
 
 
 
     const handleInputChange = (event) => {
-        setCurrentMessage(event.target.value);
-        
+        setCurrentMessage(event.target.value); 
     }
 
     const sendMessage = (to, message, username) => {
@@ -288,6 +340,7 @@ const ChatPage = (props) => {
                 {header}
                 <div className={styles.chatBody}>
                     {messages}
+                    <span className={styles.typeing} style={{bottom: isTypeing ? '0rem' : '-1rem'}}>{selectedUser ? chats[selectedUser.index].username : ''} is typeing...</span>
                 </div>
 
 

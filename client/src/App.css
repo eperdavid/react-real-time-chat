@@ -3,7 +3,7 @@ body{
 }
 
 .App{
-    min-height: 100vh;
+    min-height: 100dvh;
     background-color: #222222;
     font-family: "Inter", sans-serif;
 }
