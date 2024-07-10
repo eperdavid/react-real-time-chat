@@ -340,7 +340,7 @@ const ChatPage = (props) => {
                 {header}
                 <div className={styles.chatBody}>
                     {messages}
-                    <span className={styles.typeing} style={{bottom: isTypeing ? '0rem' : '-1rem'}}>{selectedUser ? chats[selectedUser.index].username : ''} is typeing...</span>
+                    <span className={styles.typeing} style={{bottom: isTypeing ? '0rem' : '-1rem'}}>{selectedUser ? chats[selectedUser.index].username : ''} is typing...</span>
                 </div>
 
 
