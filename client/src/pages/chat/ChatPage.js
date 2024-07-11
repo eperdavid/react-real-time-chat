@@ -50,7 +50,6 @@ const ChatPage = (props) => {
                     ...newChats[chatIndex],
                     messages: [msg, ...newChats[chatIndex].messages]
                 }
-                //newChats[chatIndex].messages.push(msg);
 
                 if(selectedUserRef.current && chatIndex !== selectedUserRef.current.index)
                 {
@@ -112,10 +111,6 @@ const ChatPage = (props) => {
 
 
     }, [socket]);
-
-    useEffect(() => {
-        console.log('isSent state changed:', isSent);
-    }, [isSent]);
     
 
     useEffect(() => {
@@ -205,6 +200,7 @@ const ChatPage = (props) => {
             socket.emit("stopTypeing", {to: selectedUser.socketID});
         }
         setCurrentMessage('');
+        setIsTypeing(false);
 
         if(userChk)
         {
@@ -282,7 +278,6 @@ const ChatPage = (props) => {
             ...updatedChats[selectedUser.index],
             messages: [msg, ...updatedChats[selectedUser.index].messages]
         }
-        //updatedChats[selectedUser.index].messages.push(msg);
         if(selectedUser.index !== 0)
         {
             const [moved] = updatedChats.splice(selectedUser.index, 1);
@@ -340,7 +335,7 @@ const ChatPage = (props) => {
                 {header}
                 <div className={styles.chatBody}>
                     {messages}
-                    <span className={styles.typeing} style={{bottom: isTypeing ? '0rem' : '-1rem'}}>{selectedUser ? chats[selectedUser.index].username : ''} is typing...</span>
+                    <span className={styles.typing} style={{bottom: isTypeing ? '0rem' : '-1rem'}}>{selectedUser ? chats[selectedUser.index].username : ''} is typing<div className={styles.dots}><div className={styles.dot}></div><div className={styles.dot}></div><div className={styles.dot}></div></div></span>
                 </div>
 
 
