@@ -51,8 +51,17 @@ const ChatPage = (props) => {
                     messages: [msg, ...newChats[chatIndex].messages]
                 }
 
-                if(selectedUserRef.current && chatIndex !== selectedUserRef.current.index)
+                if(selectedUserRef.current)
                 {
+                    if(chatIndex !== selectedUserRef.current.index)
+                    {
+                        newChats[chatIndex] = {
+                            ...newChats[chatIndex],
+                            newMsg: true
+                        }
+                    }
+                }
+                else{
                     newChats[chatIndex] = {
                         ...newChats[chatIndex],
                         newMsg: true
