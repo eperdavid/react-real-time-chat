@@ -8,6 +8,7 @@ import Message from '../../components/message/message';
 import Input from '../../components/input/input';
 import Button from '../../components/button/button';
 import Card from '../../components/card/card';
+import Spinner from '../../components/spinner/spinner';
 
 
 const ChatPage = (props) => {
@@ -26,6 +27,8 @@ const ChatPage = (props) => {
 
     const [currentMessage, setCurrentMessage] = useState('');
 
+    const [loading, setLoading] = useState(true);
+
     const [isSent, setIsSent] = useState(false);
     const [isTypeing, setIsTypeing] = useState(false);
 
@@ -37,6 +40,7 @@ const ChatPage = (props) => {
     useEffect(() => {
         socket.on("updateUsers", (data) => {
             setUsers(data);
+            setLoading(false);
         });
 
         socket.on("privateMessage", (data) => {
@@ -81,7 +85,15 @@ const ChatPage = (props) => {
             }
             
             setChats(newChats);
-            setIsTypeing(false);
+
+            if(selectedUserRef.current)
+            {
+                if(selectedUserRef.current.socketID === data.from)
+                {
+                    setIsTypeing(false);
+                }
+            }
+            
         })
 
         socket.on('userDisconnect', (data) => {
@@ -127,8 +139,7 @@ const ChatPage = (props) => {
     }, [users]);
 
     
-    
-    let cards = "";
+    let cards = '';
     let messages = <div className={styles.info}>
                     <FontAwesomeIcon className={styles.icon} icon={faCircleInfo} />
                     <p>If you want to try out the application but there are no users online, you can do so by opening a <a href='https://letschatnow.vercel.app' target='_blank' rel="noopener noreferrer">new tab</a> in your browser.</p>
@@ -144,54 +155,59 @@ const ChatPage = (props) => {
             return <Message key={index} time={message.time} type={type}>{message.message}</Message>
         });
     }
-
-    if(users.length > 1 || chats.length > 0)
+    if(loading)
     {
-        if(searchActive)
+        cards = <Spinner />;
+    }
+    else{
+        if(users.length > 1 || chats.length > 0)
         {
-            cards = filteredUsers.map((user, index) => {
-                if(filteredUsers !== null && user.username !== myData.username)
-                {
-                    return <Card key={index} socketID={user.socketID} name={user.username} selected={false} clicked={() => selectUser(user.socketID, user.username)} new={false} ></Card>
-                }
-                else{
-                    return null;
-                }
-            })
-        }
-        else{
-            if(chats.length > 0)
+            if(searchActive)
             {
-                
-                cards = chats.map((chat, index) => {
-                    
-                    let select = false;
-                    let text = "";
-                    if(chat.messages.length > 0)
+                cards = filteredUsers.map((user, index) => {
+                    if(filteredUsers !== null && user.username !== myData.username)
                     {
-                        text = chat.messages[0].message;
+                        return <Card key={index} socketID={user.socketID} name={user.username} selected={false} clicked={() => selectUser(user.socketID, user.username)} new={false} ></Card>
                     }
-
-                    if(selectedUser && selectedUser.socketID === chat.socketID)
-                    {
-                        select = true;
+                    else{
+                        return null;
                     }
-                        
-                    return <Card key={index} name={chat.username} selected={select} clicked={() => selectUser(chat.socketID, chat.username)} new={chat.newMsg} offline={chat.offline}>{text}</Card>
                 })
             }
             else{
-                cards = <div className={styles.noChats}>
-                    <p>You don't have any chats yet. Click the search bar to find a chat partner!</p>
-                </div>;
+                if(chats.length > 0)
+                {
+                    
+                    cards = chats.map((chat, index) => {
+                        
+                        let select = false;
+                        let text = "";
+                        if(chat.messages.length > 0)
+                        {
+                            text = chat.messages[0].message;
+                        }
+
+                        if(selectedUser && selectedUser.socketID === chat.socketID)
+                        {
+                            select = true;
+                        }
+                            
+                        return <Card key={index} name={chat.username} selected={select} clicked={() => selectUser(chat.socketID, chat.username)} new={chat.newMsg} offline={chat.offline}>{text}</Card>
+                    })
+                }
+                else{
+                    cards = <div className={styles.noChats}>
+                        <p>You don't have any chats yet. Click the search bar to find a chat partner!</p>
+                    </div>;
+                }
             }
         }
-    }
-    else{
-        cards = <div className={styles.usersOffline}>
-            <FontAwesomeIcon className={styles.icon} icon={faUserLargeSlash} />
-            <p>Currently, no users are online</p>
-        </div>;
+        else{
+            cards = <div className={styles.usersOffline}>
+                <FontAwesomeIcon className={styles.icon} icon={faUserLargeSlash} />
+                <p>Currently, no users are online</p>
+            </div>;
+        }
     }
 
 
@@ -309,12 +325,17 @@ const ChatPage = (props) => {
         }
     }
 
+    const backToChats = () => {
+        socket.emit("stopTypeing", {to: selectedUser.socketID});
+        setSelectedUser(null)
+    }
+
     let header = '';
     if(selectedUser)
     {
         header = <div className={styles.chatHeader}>
                     <div className={styles.flex}>
-                    <FontAwesomeIcon className={styles.backIcon} icon={faChevronLeft} size='xl' onClick={() => setSelectedUser(null)}/>
+                    <FontAwesomeIcon className={styles.backIcon} icon={faChevronLeft} size='xl' onClick={backToChats}/>
                     <div className={styles.name}>{chats[selectedUser.index].username}</div>
                     </div>
                     {chats[selectedUser.index].offline ? <div style={{fontSize: 'Larger'}}>Offline</div> : ''}
@@ -331,7 +352,7 @@ const ChatPage = (props) => {
                 </div>
                 
                 <div>
-                    <Input placeholder="Search" onFocus={() => {setSearchActive(true)}} onBlur={() => {setTimeout(() => {setSearchActive(false)},100)}} changed={userFilter} />
+                    <Input placeholder="Search" onFocus={() => {setSearchActive(true)}} onBlur={() => {setTimeout(() => {setSearchActive(false)},200)}} changed={userFilter} />
                 </div>
 
                 <div className={styles.cards}>
