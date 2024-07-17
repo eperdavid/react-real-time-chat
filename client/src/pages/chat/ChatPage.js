@@ -370,7 +370,7 @@ const ChatPage = (props) => {
 
 
                 <div className={styles.chatFooter}>
-                    <Input placeholder="Message" value={currentMessage} changed={(event) => {handleInputChange(event)}} keyDown={(event) => handlePressKey(event)} />
+                    <Input placeholder="Message" value={currentMessage} changed={(event) => {handleInputChange(event)}} keyDown={(event) => handlePressKey(event)} max={500} />
                     <Button clicked={() => sendMessage(selectedUser.socketID, currentMessage, myData.username)}  disabled={!selectedUser || currentMessage.trim() === ''}><FontAwesomeIcon icon={faArrowUp}/></Button>
                 </div>
             </div>

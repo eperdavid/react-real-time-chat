@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
         {
             if(users.some((user) => user.username.toLowerCase().trim() === data.username.toLowerCase().trim()))
             {
-                socket.emit("loginError", "Username is already exist");
+                socket.emit("loginError", "Username already exists");
             }
             else{
                 socket.emit("loginSuccess", data.username, data.socketId);
@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
             }
         }
         else{
-            socket.emit("loginError", "Empty field");
+            socket.emit("loginError", "Field cannot be empty");
         }
     }
     else{

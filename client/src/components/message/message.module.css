@@ -9,6 +9,7 @@
     border-radius: 20px;
     max-width: 500px;
     word-wrap: break-word;
+    word-break: break-word;
 }
 
 .time{
