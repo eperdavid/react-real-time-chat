@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './ChatPage.module.css';
+import themes from '../../themes';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGear, faCircleInfo, faArrowUp, faChevronLeft, faUserLargeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +14,8 @@ import Spinner from '../../components/spinner/spinner';
 
 const ChatPage = (props) => {
 
+    
+    
     const myData = {socketId: props.socketId, username: props.username};
 
     const [users, setUsers] = useState([]);
@@ -28,6 +31,11 @@ const ChatPage = (props) => {
     const [currentMessage, setCurrentMessage] = useState('');
 
     const [loading, setLoading] = useState(true);
+
+    const [theme, setTheme] = useState('blue');
+    const [direction, setDirection] = useState('row')
+
+    const [settings, setSettings] = useState(false);
 
     const [isSent, setIsSent] = useState(false);
     const [isTypeing, setIsTypeing] = useState(false);
@@ -142,7 +150,7 @@ const ChatPage = (props) => {
     let cards = '';
     let messages = <div className={styles.info}>
                     <FontAwesomeIcon className={styles.icon} icon={faCircleInfo} />
-                    <p>If you want to try out the application but there are no users online, you can do so by opening a <a href='https://letschatnow.vercel.app' target='_blank' rel="noopener noreferrer">new tab</a> in your browser.</p>
+                    <p>If you want to try out the application but there are no users online, you can do so by opening a <a style={{color: themes[theme]}} href='https://letschatnow.vercel.app' target='_blank' rel="noopener noreferrer">new tab</a> in your browser.</p>
                 </div>;
     if(selectedUser)
     {
@@ -152,7 +160,7 @@ const ChatPage = (props) => {
             {
                 type = "received";
             }
-            return <Message key={index} time={message.time} type={type}>{message.message}</Message>
+            return <Message key={index} time={message.time} type={type} theme={themes[theme]}>{message.message}</Message>
         });
     }
     if(loading)
@@ -192,7 +200,7 @@ const ChatPage = (props) => {
                             select = true;
                         }
                             
-                        return <Card key={index} name={chat.username} selected={select} clicked={() => selectUser(chat.socketID, chat.username)} new={chat.newMsg} offline={chat.offline}>{text}</Card>
+                        return <Card key={index} name={chat.username} selected={select} clicked={() => selectUser(chat.socketID, chat.username)} new={chat.newMsg} offline={chat.offline} theme={themes[theme]}>{text}</Card>
                     })
                 }
                 else{
@@ -248,6 +256,7 @@ const ChatPage = (props) => {
             const addToChat = [user, ...chats];
             setChats(addToChat);
         }
+
     }
 
     useEffect(() => {
@@ -341,14 +350,42 @@ const ChatPage = (props) => {
                     {chats[selectedUser.index].offline ? <div style={{fontSize: 'Larger'}}>Offline</div> : ''}
                 </div>;
     }
-
     
     return (
-        <div className={styles.wrapper} id={selectedUser ? styles.Chat : styles.Chats}>
+        <div style={{flexDirection: direction}} className={styles.wrapper} id={selectedUser ? styles.Chat : styles.Chats}>
             <div className={styles.chats} style={{backgroundColor: searchActive ? '#2A2A2A' : '#161616'}}>
+
+                <div style={{display: settings ? 'block' : 'none'}} className={styles.settings}>
+                    <div>
+                        <div>
+                            <div style={{marginBottom: '2rem'}}>
+                                <p>Theme colors</p>
+                                <div className={styles.flex}>
+                                    {Object.entries(themes).map(([key, value]) => (
+                                        <div key={key} id={theme === key ? styles.active : null} style={{borderColor: themes[theme]}} className={styles.ring}>
+                                            <div style={{backgroundColor: value}} className={styles.box} onClick={() => setTheme(key)}></div>
+                                        </div>
+                                    ))
+                                    }
+                                </div>
+                            </div>
+                            <div>
+                                <p>Direction</p>
+                                <div id={styles.images} className={styles.flex}>
+                                    <img style={{borderColor: direction === 'row' ? themes[theme] : ''}} src='/images/chat.png' alt='Chat' onClick={() => setDirection('row')}/>    
+                                    <img style={{borderColor: direction === 'row-reverse' ? themes[theme] : ''}} src='/images/chat.png' alt='Chat' onClick={() => setDirection('row-reverse')}/>    
+                                </div>
+                            </div>
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className={styles.chatsHeader}>
-                    <h1>Chats</h1>
-                    <FontAwesomeIcon style={{display: 'none'}} className={styles.icon} icon={faGear}/>
+                    <h1>{!settings ? 'Chats' : 'Settings'}</h1>
+                    <FontAwesomeIcon id={styles.gearIcon} className={`${styles.icon} ${settings ? styles.rotate : ''}`} icon={faGear} onClick={() => setSettings(!settings)}/>
                 </div>
                 
                 <div>
@@ -365,13 +402,13 @@ const ChatPage = (props) => {
                 {header}
                 <div className={styles.chatBody}>
                     {messages}
-                    <span className={styles.typing} style={{bottom: isTypeing ? '0rem' : '-1rem'}}>{selectedUser ? chats[selectedUser.index].username : ''} is typing<div className={styles.dots}><div className={styles.dot}></div><div className={styles.dot}></div><div className={styles.dot}></div></div></span>
+                    <span className={styles.typing} style={{bottom: (isTypeing && !chats[selectedUser.index].offline) ? '0rem' : '-1rem'}}>{selectedUser ? chats[selectedUser.index].username : ''} is typing<div className={styles.dots}><div className={styles.dot}></div><div className={styles.dot}></div><div className={styles.dot}></div></div></span>
                 </div>
 
 
                 <div className={styles.chatFooter}>
                     <Input placeholder="Message" value={currentMessage} changed={(event) => {handleInputChange(event)}} keyDown={(event) => handlePressKey(event)} max={500} />
-                    <Button clicked={() => sendMessage(selectedUser.socketID, currentMessage, myData.username)}  disabled={!selectedUser || currentMessage.trim() === ''}><FontAwesomeIcon icon={faArrowUp}/></Button>
+                    <Button clicked={() => sendMessage(selectedUser.socketID, currentMessage, myData.username)} theme={themes[theme]} disabled={!selectedUser || currentMessage.trim() === ''}><FontAwesomeIcon icon={faArrowUp}/></Button>
                 </div>
             </div>
         </div>

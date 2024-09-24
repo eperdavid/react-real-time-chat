@@ -12,6 +12,5 @@
 }
 
 .button:disabled{
-    background-color: #508aff;
     cursor: auto;
 }
