@@ -369,7 +369,7 @@ const ChatPage = (props) => {
                                     }
                                 </div>
                             </div>
-                            <div>
+                            <div className={styles.direction}>
                                 <p>Direction</p>
                                 <div id={styles.images} className={styles.flex}>
                                     <img style={{borderColor: direction === 'row' ? themes[theme] : ''}} src='/images/chat.png' alt='Chat' onClick={() => setDirection('row')}/>    

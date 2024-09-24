@@ -302,6 +302,10 @@
         padding-left: 3rem;
         padding-right: 3rem;
     }
+
+    .direction{
+        display: none;
+    }
 }
 
 @media only screen and (max-width: 500px) {
