@@ -48,7 +48,6 @@ const ChatPage = (props) => {
     useEffect(() => {
         socket.on("updateUsers", (data) => {
             setUsers(data);
-            setLoading(false);
         });
 
         socket.on("privateMessage", (data) => {
@@ -138,12 +137,12 @@ const ChatPage = (props) => {
             
         })
 
-
     }, [socket]);
     
 
     useEffect(() => {
         setFilteredUsers(users);
+        setLoading(false);
     }, [users]);
 
     

@@ -36,7 +36,11 @@ const HomePage = (props) => {
     }
     
     const handleInputChange = (event) => {
-        setUsername(event.target.value);
+        const inputValue = event.target.value;
+
+        if (inputValue.length <= 15) {
+            setUsername(inputValue);
+        }
         setError(prev => ({...prev, visible: false}));
     }
 
@@ -50,7 +54,7 @@ const HomePage = (props) => {
             <div className={styles.right}>
                 <div className={styles.gap}>
                     <div style={{position: 'relative'}}>
-                    <Input placeholder="Username" changed={(event) => {handleInputChange(event)}} max={15} />
+                    <Input placeholder="Username" changed={(event) => {handleInputChange(event)}} max={15} value={username} />
                     <span className={`${styles.error} ${error.visible ? styles.visible : ''}`}>{error.message || "\u00A0"}</span>
                     <span className={styles.counter}>{username.length}/15</span>
                     </div>
