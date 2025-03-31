@@ -1,5 +1,5 @@
 ## Demo
-Check out the demo here: letschatnow.vercel.app
+Check out the demo here: [letschatnow.vercel.app](letschatnow.vercel.app)
 
 ## About the project
 This is a real-time chat application that allows users to send private messages. It is built with React.js and Socket.io.
