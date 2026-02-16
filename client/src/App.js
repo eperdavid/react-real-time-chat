@@ -5,7 +5,7 @@ import HomePage from "./pages/home/HomePage";
 import ChatPage from "./pages/chat/ChatPage";
 
 import io from 'socket.io-client';
-const socket = io('https://server-production-015e.up.railway.app'); 
+const socket = io('https://chatapp-server-ed8n.onrender.com'); 
 
 function App() {
 
